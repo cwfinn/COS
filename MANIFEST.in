@@ -1,0 +1,6 @@
+include README.rst LICENCE.rst
+
+recursive-include COS/LSF *
+recursive-include COS/config *
+
+prune build
