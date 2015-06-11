@@ -253,7 +253,7 @@ class LSF(object):
     def __init__(self, grating):
 
         self.lsf = ascii.read('{0}/LSF/{1}.txt'.format(datapath, grating))
-        self.dispersion = self.lsf['relpix'] * dw_orig[grating]
+        self.dispersion = self.lsf['relpix'].data * dw_orig[grating]
         self.pixel_width = dw_orig[grating]
 
     def interpolate(self, dw):
@@ -346,7 +346,9 @@ def read_lsf(grating, dw_new=None):
         pass
 
     lsf = LSF(grating)
-    lsf.interpolate(dw_new)
+
+    if dw_new is not None:
+        lsf.interpolate(dw_new)
 
     cache_lsf['{0}_{1}'.format(grating, dw_new)] = lsf
 
