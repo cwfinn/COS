@@ -25,11 +25,12 @@ __all__ = ['read_x1d', 'read_lsf', 'limiting_equivalent_width',
 
 datapath = os.path.split(os.path.abspath(__file__))[0] + '/'
 
-dw_orig = dict(G130M=0.00997, G160M=0.01223, G140L=0.083, NUV=0.390)
+dw_orig = dict(G130M=0.00997, G160M=0.01223, G140L=0.083, G185M=0.034,
+               G225M=0.034, G285M=0.04, G230L=0.39)
 
 c_kms = c.to(km / s)
 
-# Cache for the LSF values
+# Cache for the LSF values:
 cache_lsf = {}
 
 
@@ -233,8 +234,8 @@ class LSF(object):
 
     Parameters
     ----------
-    grating : {'G130M', 'G160M', 'G140L', 'NUV'}
-        Grating name. All NUV gratings have the same LSF, and are denoted `NUV`.
+    grating : {`G130M`, `G160M`, `G140L`, `G185M`, `G225M`, `G285M`, `G230L`}
+        The name of the grating.
 
     Attributes
     ----------
@@ -248,13 +249,20 @@ class LSF(object):
     pixel_width : float
         Pixel width (Angstrom).
 
+    grating : str
+        The name of the grating.
+
     """
 
     def __init__(self, grating):
 
-        self.lsf = ascii.read('{0}/LSF/{1}.txt'.format(datapath, grating))
+        name = ('NUV' if grating in ('G185M', 'G225M', 'G285M', 'G230L')
+                else grating)
+
+        self.lsf = ascii.read('{0}/LSF/{1}.txt'.format(datapath, name))
         self.dispersion = self.lsf['relpix'].data * dw_orig[grating]
         self.pixel_width = dw_orig[grating]
+        self.grating = grating
 
     def interpolate(self, dw):
         """ Interpolate LSF to a new pixel width.
@@ -266,22 +274,36 @@ class LSF(object):
 
         """
 
-        t = np.arange(0, self.dispersion[-2], dw)
-        new_disp = np.concatenate([-t[::-1][:-1], t])
+        key = '{0}_{1}'.format(self.grating, dw)
 
-        wavs = self.lsf.colnames[1:]
-        new_lsf = []
-        for w in wavs:
-            new_lsf.append(
-                interp1d(self.dispersion, self.lsf[w], kind='cubic')(new_disp))
+        if key in cache_lsf.keys():
 
-        t = np.arange(len(new_disp) // 2 + 1)
-        new_pix = np.concatenate([-t[::-1][:-1], t])
-        lsf = Table([new_pix] + new_lsf, names=self.lsf.colnames)
+            self.lsf = cache_lsf[key].lsf
+            self.dispersion = cache_lsf[key].dispersion
+            self.pixel_width = cache_lsf[key].pixel_width
 
-        self.lsf = lsf
-        self.dispersion = new_disp
-        self.pixel_width = dw
+        else:
+
+            t = np.arange(0, self.dispersion[-2], dw)
+            new_disp = np.concatenate([-t[::-1][:-1], t])
+
+            wavs = self.lsf.colnames[1:]
+            new_lsf = []
+
+            for w in wavs:
+                new_lsf.append(
+                    interp1d(self.dispersion, self.lsf[w],
+                             kind='cubic')(new_disp))
+
+            t = np.arange(len(new_disp) // 2 + 1)
+            new_pix = np.concatenate([-t[::-1][:-1], t])
+            lsf = Table([new_pix] + new_lsf, names=self.lsf.colnames)
+
+            self.lsf = lsf
+            self.dispersion = new_disp
+            self.pixel_width = dw
+
+            cache_lsf['{0}_{1}'.format(self.grating, dw)] = self
 
     def write(self, wavelength, dw):
         """ Write a file giving the COS line spread function at a given
@@ -323,9 +345,8 @@ def read_lsf(grating, dw_new=None):
 
     Parameters
     ----------
-    grating : {`G130M`, `G160M`, `G140L`, `NUV`}
-        Either 'NUV' for all near UV gratings, or the name of the far UV
-        COS grating.
+    grating : {`G130M`, `G160M`, `G140L`, `G185M`, `G225M`, `G285M`, `G230L`}
+        The name of the grating.
 
     dw_new : float
         The new pixel width in Angstroms.  Default is `None`, which
@@ -338,19 +359,13 @@ def read_lsf(grating, dw_new=None):
 
     """
 
-    # See if we've already calculated it:
-    try:
-        return cache_lsf['{0}_{1}'.format(grating, dw_new)]
-
-    except KeyError:
-        pass
+    if grating not in dw_orig.keys():
+        raise KeyError('grating name not recognised')
 
     lsf = LSF(grating)
 
     if dw_new is not None:
         lsf.interpolate(dw_new)
-
-    cache_lsf['{0}_{1}'.format(grating, dw_new)] = lsf
 
     return lsf
 
