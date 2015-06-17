@@ -126,7 +126,7 @@ def convolve_with_COS_FOS(
         print('COS NUV pixel width {0:.4f} Angstrom\n'
               '(from {1:.6f} Angstrom)'.format(dw, wavelength[n]))
 
-        profile = read_lsf('NUV', dw)
+        profile = read_lsf('G230L', dw)
 
         keys = 'w1700 w1800 w1900 w2000 w2100 w2200 w2300 w2400 w2500 w2600 \
         w2700 w2800 w2900 w3000 w3100 w3200'.split()
