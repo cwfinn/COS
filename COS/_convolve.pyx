@@ -24,8 +24,7 @@ cimport cython
 def convolve_with_COS_FOS(
         nc.ndarray[nc.float64_t] a,
         nc.ndarray[nc.float64_t] wavelength,
-        use_cos_nuv=False,
-        cos_nuv_only=False):
+        use_cos_nuv=False, cos_nuv_only=False, verbose=False):
     """ Convolves array `a` at wavelengths `wavelength` with either the COS LSF
     or a gaussian LSF for FOS, depending on the wavelength.
 
@@ -62,7 +61,9 @@ def convolve_with_COS_FOS(
     n = 0
 
     if not cos_nuv_only:
-        print('COS FUV pixel width {0:.4f} Angstrom'.format(dw))
+
+        if verbose:
+            print('COS FUV pixel width {0:.4f} Angstrom'.format(dw))
 
         profile = read_lsf('G130M', dw)
         keys = 'w1150 w1200 w1250 w1300 w1350 w1400 w1450'.split()
@@ -123,8 +124,9 @@ def convolve_with_COS_FOS(
 
         dw = np.median(np.diff(wavelength[n:]))
 
-        print('COS NUV pixel width {0:.4f} Angstrom\n'
-              '(from {1:.6f} Angstrom)'.format(dw, wavelength[n]))
+        if verbose:
+            print('COS NUV pixel width {0:.4f} Angstrom\n'
+                  '(from {1:.6f} Angstrom)'.format(dw, wavelength[n]))
 
         profile = read_lsf('G230L', dw)
 
