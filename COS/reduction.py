@@ -17,13 +17,6 @@ import sys
 import os
 
 
-usage = """
-> SYNTAX : runcalcos <configuration_file>
->
-> To dump a default configuration file : runcalcos -d
-"""
-
-
 class RawData(object):
     """
     Describes an uncalibrated COS data set downloaded from the MAST archive.
@@ -222,13 +215,12 @@ class RawData(object):
 def main(args=None):
     """ This is the main function called by the `runcalcos` script.
 
-
     """
 
     from astropy.utils.compat import argparse
     from astropy.extern.configobj import configobj, validate
 
-    from pkg_resources import resource_string
+    from pkg_resources import resource_stream
 
     parser = argparse.ArgumentParser(
         description='Run the COS pipeline CalCOS using the data and '
@@ -237,8 +229,8 @@ def main(args=None):
 
     parser.add_argument('config', help='path to the configuration file')
 
-    config = resource_string(__name__, '/config/runcalcos.cfg')
-    spec = resource_string(__name__, '/config/runcalcos_specification.cfg')
+    config = resource_stream(__name__, '/config/runcalcos.cfg')
+    spec = resource_stream(__name__, '/config/runcalcos_specification.cfg')
 
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
