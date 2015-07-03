@@ -8,7 +8,7 @@ from Cython.Build import cythonize
 import numpy
 
 setup(name='COS',
-      version='0.1.0',
+      version='0.1.1',
       packages=find_packages(),
       description='Utilities for data taken with the Cosmic Origins '
                   'Spectrograph on the Hubble Space Telescope',
@@ -18,7 +18,7 @@ setup(name='COS',
       author_email='c.w.finn2301@gmail.com',
       license='BSD',
       url='https://github.com/cwfinn/COS',
-      download_url='https://pypi.python.org/pypi/COS/0.1.0',
+      download_url='https://pypi.python.org/pypi/COS/0.1.1',
       classifiers=[
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: BSD License',
