@@ -107,6 +107,10 @@ def coadd_x1d(name, data_path, calibration_path, smooth_background=True,
     x1d_files = glob.glob('{0}/*x1d.fits'.format(data_path))
     print('Found {0} x1d files'.format(len(x1d_files)))
 
+    if len(x1d_files) == 0:
+        raise AssertionError(
+            'No x1d.fits data found in the specified directory!')
+
     # Read in x1d tables and headers:
     x1dspec = [read_x1d(fh) for fh in x1d_files]
 

@@ -152,14 +152,32 @@ class RawData(object):
                    (table['APERTURE'] == 'PSA'))
 
             table['HEIGHT'][g130m] = G130M[0]
-            table['BHEIGHT'][g130m] = G130M[1]
             table['HEIGHT'][g160m] = G160M[0]
-            table['BHEIGHT'][g160m] = G160M[1]
             table['HEIGHT'][g140l] = G140L[0]
-            table['BHEIGHT'][g140l] = G140L[1]
             table['HEIGHT'][nuv] = NUV[0]
-            table['BHEIGHT'][nuv] = NUV[1]
 
+            try:
+                table['BHEIGHT'][g130m] = G130M[1]
+            except:
+                #The keys have changed apparently!
+                table['B_HGT1'][g130m] = G130M[1]
+                table['B_HGT2'][g130m] = G130M[1]
+            try:
+                table['BHEIGHT'][g160m] = G160M[1]
+            except:
+                table['B_HGT1'][g160m] = G160M[1]
+                table['B_HGT2'][g160m] = G160M[1]
+            try:
+                table['BHEIGHT'][g140l] = G140L[1]
+            except:
+                table['B_HGT1'][g140l] = G140L[1]
+                table['B_HGT2'][g140l] = G140L[1]
+            try:
+                table['BHEIGHT'][nuv] = NUV[1]
+            except:
+                table['B_HGT1'][nuv] = NUV[1]
+                table['B_HGT2'][nuv] = NUV[1]
+                
             hdulist.flush()
             hdulist.close()
 
@@ -198,8 +216,7 @@ class RawData(object):
         """
 
         try:
-            import calcos
-
+           import calcos
         except:
             raise ImportError('CalCOS not installed')
 
