@@ -3,7 +3,7 @@ for use in co-addition, and for reading and writing the line spread functions.
 
 """
 
-
+from __future__ import division
 
 from .spectrum import COSx1dSpectrum
 
@@ -55,11 +55,11 @@ def read_x1d(filename):
 
     header, meta = OrderedDict(), OrderedDict()
 
-    for key, val in hdulist[0].header.items():
+    for key, val in hdulist[0].header.iteritems():
         if key != '':
             header[key] = val
 
-    for key, val in hdulist[1].header.items():
+    for key, val in hdulist[1].header.iteritems():
         if key != '':
             meta[key] = val
 
@@ -219,8 +219,8 @@ def scale_factor(wavelength1, flux1, error1, wavelength2, flux2, error2):
     median2 = np.median(flux2[good2])
 
     if not (median1 > 0) or not (median2 > 0):
-        print(('Bad medians: ', str(median1), str(median2),
-              ' returning unit scaling'))
+        print('Bad medians: ', str(median1), str(median2),
+              ' returning unit scaling')
         scaling = 1
         return scaling
 
@@ -276,7 +276,7 @@ class LSF(object):
 
         key = '{0}_{1}'.format(self.grating, dw)
 
-        if key in list(cache_lsf.keys()):
+        if key in cache_lsf.keys():
 
             self.lsf = cache_lsf[key].lsf
             self.dispersion = cache_lsf[key].dispersion
@@ -359,7 +359,7 @@ def read_lsf(grating, dw_new=None):
 
     """
 
-    if grating not in list(dw_orig.keys()):
+    if grating not in dw_orig.keys():
         raise KeyError('grating name not recognised')
 
     lsf = LSF(grating)

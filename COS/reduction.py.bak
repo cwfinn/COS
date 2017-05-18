@@ -2,7 +2,7 @@
 
 """
 
-
+from __future__ import division, print_function
 
 from astropy.units import deg, s, angstrom
 from astropy.coordinates import SkyCoord
@@ -205,7 +205,7 @@ class RawData(object):
 
         print('\nWill run CalCOS on the following raw data products:\n')
         self.info.pprint(max_lines=50)
-        run = input('\nContinue? (y)/n  ')
+        run = raw_input('\nContinue? (y)/n  ')
 
         if run != 'n':
             for asn in self.asn:
