@@ -2,7 +2,7 @@
 
 """
 
-
+from __future__ import division, print_function
 
 from astropy.table import Table, Column
 from astropy.units import angstrom, erg, s, cm
@@ -128,13 +128,13 @@ class COSx1dSpectrum(object):
 
                 pl.show()
 
-                decision = input('Adopt this backgound? y/n : ')
+                decision = raw_input('Adopt this backgound? y/n : ')
 
                 if decision == 'y':
                     self.background = smoothed_background / s
 
                 else:
-                    smoothing_length = int(input(
+                    smoothing_length = int(raw_input(
                         'Enter new smoothing length : '))
 
             else:

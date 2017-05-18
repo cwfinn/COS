@@ -3,7 +3,7 @@ data from the G130M, G160M and G230L gratings.
 
 """
 
-
+from __future__ import division, print_function
 
 from .utils import read_x1d, scale_factor, cross_correlate
 
@@ -110,8 +110,8 @@ def coadd_x1d(name, data_path, calibration_path, smooth_background=True,
     # Read in x1d tables and headers:
     x1dspec = [read_x1d(fh) for fh in x1d_files]
 
-    targname = x1dspec[0][list(x1dspec[0].keys())[0]].header['TARGNAME']
-    pid = str(x1dspec[0][list(x1dspec[0].keys())[0]].header['PROPOSID'])
+    targname = x1dspec[0][x1dspec[0].keys()[0]].header['TARGNAME']
+    pid = str(x1dspec[0][x1dspec[0].keys()[0]].header['PROPOSID'])
 
     fuv_spectra, nuv_spectra = [], []
 
@@ -126,7 +126,7 @@ def coadd_x1d(name, data_path, calibration_path, smooth_background=True,
     for i in range(len(x1dspec)):
 
         # Loop over detector segments:
-        for j, detector in enumerate(list(x1dspec[i].keys())):
+        for j, detector in enumerate(x1dspec[i].keys()):
 
             # Ignore NUVC (affected by second order light):
             if detector == 'NUVC':
@@ -506,7 +506,7 @@ def coadd_x1d(name, data_path, calibration_path, smooth_background=True,
                                 pl.plot(compx, compy, drawstyle='steps-mid')
                                 pl.show()
 
-                                apply_shift = input('Apply shift? (y)/n: ')
+                                apply_shift = raw_input('Apply shift? (y)/n: ')
 
                                 if apply_shift == 'n':
                                     spectra[i][k].wavelength -= xshift
